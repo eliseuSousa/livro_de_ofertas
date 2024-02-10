@@ -260,13 +260,13 @@ int main() {
    inserirFim(&livroDeOfertas, 17.5, 200);
    imprimirLivroDeOfertas(&livroDeOfertas);
 
-   printf("");
+   puts("");
    scanf("%i", &numDeNotificacoes);
 
    while(numDeNotificacoesProcessadas < numDeNotificacoes) {
 
-    printf("");
-    scanf("%s", &parametros);
+    puts("");
+    scanf("%s", parametros);
 
     ponteiro = 0;
 
