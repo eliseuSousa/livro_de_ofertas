@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 // Implementando a estrutura de dados
 // lista encadeada
@@ -32,7 +33,7 @@ void inserirInicio(LivroDeOfertas *livroDeOfertas, double valor, int quantidade)
 void inserirFim(LivroDeOfertas *livroDeOfertas, double valor, int quantidade) {
   Produto *produtoAtual,*novoProduto = (Produto *)malloc(sizeof(Produto));
 
-  if(livroDeOfertas->tamanho == 0) {
+  if(livroDeOfertas->tamanho == 1) {
     inserirInicio(livroDeOfertas, valor, quantidade);
   } else {
 
@@ -50,15 +51,17 @@ void inserirFim(LivroDeOfertas *livroDeOfertas, double valor, int quantidade) {
   }
 }
 
-void inserir(LivroDeOfertas *livroDeOfertas, int posicao, double valor, int quantidade) {
+void inserir(LivroDeOfertas *livroDeOfertas, int posicao, double valor, int quantidade, bool *loopControle) {
   Produto *produtoAtual, *novoProduto = (Produto *)malloc(sizeof(Produto));
+
   int count = 1;
-  if(posicao == 0) {
+  if(posicao == 1) {
     inserirInicio(livroDeOfertas, valor, quantidade);
   } else if (posicao == livroDeOfertas->tamanho) {
     inserirFim(livroDeOfertas, valor, quantidade);
   } else if (posicao > livroDeOfertas->tamanho) {
     printf("%d está fora dos limites da lista que tem tamanho %d \n", posicao, livroDeOfertas->tamanho);
+    *loopControle = false;
   } else {
     produtoAtual = livroDeOfertas->inicio;
     while(count < (posicao - 1)) {
@@ -73,18 +76,22 @@ void inserir(LivroDeOfertas *livroDeOfertas, int posicao, double valor, int quan
   }
 }
 
-void modificar(LivroDeOfertas *livroDeOfertas, int posicao, double valor, int quantidade) {
+void modificar(LivroDeOfertas *livroDeOfertas, int posicao, double valor, int quantidade, bool *loopControle) {
 
   Produto *produto = livroDeOfertas->inicio;
-  int count = 0;
-
-  while(count != posicao) {
-    produto = produto->proximo;
-    count++;  
+  
+  int count = 1;
+  if(posicao > livroDeOfertas->tamanho) {
+    printf("%d está fora dos limites da lista que tem tamanho %d \n", posicao, livroDeOfertas->tamanho);
+    *loopControle = false;
+  } else {
+    while(count != posicao) {
+      produto = produto->proximo;
+      count++;  
+    }
+    produto->valor = valor;
+    produto->quantidade = quantidade;
   }
-
-  produto->valor = valor;
-  produto->quantidade = quantidade;
 }
 
 void removerInicio(LivroDeOfertas *livroDeOfertas) {
@@ -123,7 +130,7 @@ void removerFinal(LivroDeOfertas *livroDeOfertas) {
 
 }
 
-void remover(LivroDeOfertas *livroDeOfertas, int posicao) {
+void remover(LivroDeOfertas *livroDeOfertas, int posicao, bool *loopControle) {
   int count = 1;
   Produto *produtoAtual, *produtoAlvo = (Produto *) malloc(sizeof(Produto));
 
@@ -135,25 +142,26 @@ void remover(LivroDeOfertas *livroDeOfertas, int posicao) {
     removerFinal(livroDeOfertas);
   } else if (posicao > livroDeOfertas->tamanho) {
     printf("%d está fora dos limites da lista que tem tamanho %d \n", posicao, livroDeOfertas->tamanho);
+    *loopControle = false;
   }
   else {
     while(count < (posicao - 1)) {
       produtoAtual = produtoAtual->proximo;
       count++;
     }
-
     produtoAlvo = produtoAtual->proximo;
     produtoAtual->proximo = produtoAlvo->proximo;
     free(produtoAlvo);
-
     livroDeOfertas->tamanho--;
   }
 }
 
 // Imprimindo o livro de ofertas
 void imprimirLivroDeOfertas(LivroDeOfertas *livroDeOfertas) {
-   int i = 1;
+  int i = 1;
   Produto *produtoAtual = livroDeOfertas->inicio;
+
+  printf("Livro de Ofertas:\n");
   while(produtoAtual != NULL) {
     printf("%i,%.2f,%i\n", i, produtoAtual->valor, produtoAtual->quantidade);
     produtoAtual = produtoAtual->proximo;
@@ -172,9 +180,7 @@ int getPosicao(char *parametros, int *ponteiro) {
       (*ponteiro)++;
       i++;
    }
-
    buffer[i] = '\0';
-
    posicao = atoi(buffer);
    
    return posicao;
@@ -191,9 +197,7 @@ int getAcao(char *parametros, int *ponteiro) {
       (*ponteiro)++;
       i++;
    }
-
    buffer[i] = '\0';
-
    acao = atoi(buffer);
 
    return acao;
@@ -210,9 +214,7 @@ double getValor(char *parametros, int *ponteiro) {
       (*ponteiro)++;
       i++;
    }
-
    buffer[i] = '\0';
-
    valor = atof(buffer);
    
    return valor;
@@ -229,9 +231,7 @@ int getQuantidade(char *parametros, int *ponteiro) {
       (*ponteiro)++;
       i++;
    }
-   
    buffer[i] = '\0';
-
    quantidade = atoi(buffer);
 
    return quantidade;
@@ -240,13 +240,15 @@ int getQuantidade(char *parametros, int *ponteiro) {
 int main() {
 
    LivroDeOfertas livroDeOfertas;
-   inicializarLivroDeOfertas(&livroDeOfertas);
+   bool loopControle = true;
    int numDeNotificacoes;
    int numDeNotificacoesProcessadas = 0;
+   int ponteiro;
    char parametros[30];
    int posicao, acao, quantidade;
    double valor;
-   int ponteiro;
+
+   inicializarLivroDeOfertas(&livroDeOfertas);
 
    // Inicializando o Livro de Ofertas
    inserirInicio(&livroDeOfertas, 15.4, 50);
@@ -260,12 +262,12 @@ int main() {
    inserirFim(&livroDeOfertas, 17.5, 200);
    imprimirLivroDeOfertas(&livroDeOfertas);
 
-   puts("");
+   printf("\n");
    scanf("%i", &numDeNotificacoes);
 
-   while(numDeNotificacoesProcessadas < numDeNotificacoes) {
+   while((loopControle) && (numDeNotificacoesProcessadas < numDeNotificacoes)) {
 
-    puts("");
+    printf("\n");
     scanf("%s", parametros);
 
     ponteiro = 0;
@@ -277,44 +279,39 @@ int main() {
 
     switch(acao) {
       case 0:
-        if((valor > 0) || (quantidade > 0)) {
-          inserir(&livroDeOfertas, posicao, valor, quantidade);
+        if((valor > 0) && (quantidade > 0)) {
+          inserir(&livroDeOfertas, posicao, valor, quantidade, &loopControle);
         } else {
-          printf("Valores positivos e diferentes de zero são esperados para as propriedade \"valor\" e \"quantidade\"\n");
+          printf("Inserções esperam valores positivos e não nulos para \"valor\" e \"quantidade\".\n");
+          loopControle = false;
         }
         break;
 
       case 1:
-        if((valor > 0) || (quantidade > 0)) {
-          modificar(&livroDeOfertas, posicao, valor, quantidade);
+        if((valor > 0) && (quantidade > 0)) {
+          modificar(&livroDeOfertas, posicao, valor, quantidade, &loopControle);
         } else {
-          printf("Valores positivos e diferentes de zero são esperados para as propriedade \"valor\" e \"quantidade\"\n");
+          printf("Modificações esperam valores positivos e não nulos para \"valor\" e \"quantidade\".\n");
+          loopControle = false;
         }
         break;
 
       case 2:
         if(valor == 0 && quantidade == 0) {
-          remover(&livroDeOfertas, posicao);
+          remover(&livroDeOfertas, posicao, &loopControle);
         } else {
-          printf("Esperado valores 0 para a propriedade \"valor\" e \"quantidade\"\n");
+          printf("Remoções esperam valores zero para \"valor\" e \"quantidade\".\n");
+          loopControle = false;
         }
         break;
 
       default:
+        loopControle = false;
         printf("Opção inválida\n");
     }
-
-    //printf("Parametros: %s\n", parametros);
-    //printf("Posição: %i\n", posicao);
-    //printf("Ação: %i\n", acao);
-    //printf("Valor: %.2f\n", valor);
-    //printf("Quantidade: %i\n", quantidade);
 
     numDeNotificacoesProcessadas++;
   }
 
-  printf("Lista de livros\n");
-
   imprimirLivroDeOfertas(&livroDeOfertas);
-   
 }
