@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
 // Implementando a estrutura de dados
 // lista encadeada
@@ -51,7 +50,7 @@ void inserirFim(LivroDeOfertas *livroDeOfertas, double valor, int quantidade) {
   }
 }
 
-void inserir(LivroDeOfertas *livroDeOfertas, int posicao, double valor, int quantidade, bool *loopControle) {
+void inserir(LivroDeOfertas *livroDeOfertas, int posicao, double valor, int quantidade) {
   Produto *produtoAtual, *novoProduto = (Produto *)malloc(sizeof(Produto));
 
   int count = 1;
@@ -61,7 +60,7 @@ void inserir(LivroDeOfertas *livroDeOfertas, int posicao, double valor, int quan
     inserirFim(livroDeOfertas, valor, quantidade);
   } else if (posicao > livroDeOfertas->tamanho) {
     printf("%d está fora dos limites da lista que tem tamanho %d \n", posicao, livroDeOfertas->tamanho);
-    *loopControle = false;
+    printf("Operação: %i,0,%.2f,%i foi rejeitada \n", posicao, valor, quantidade);
   } else {
     produtoAtual = livroDeOfertas->inicio;
     while(count < (posicao - 1)) {
@@ -76,14 +75,14 @@ void inserir(LivroDeOfertas *livroDeOfertas, int posicao, double valor, int quan
   }
 }
 
-void modificar(LivroDeOfertas *livroDeOfertas, int posicao, double valor, int quantidade, bool *loopControle) {
+void modificar(LivroDeOfertas *livroDeOfertas, int posicao, double valor, int quantidade) {
 
   Produto *produto = livroDeOfertas->inicio;
   
   int count = 1;
   if(posicao > livroDeOfertas->tamanho) {
     printf("%d está fora dos limites da lista que tem tamanho %d \n", posicao, livroDeOfertas->tamanho);
-    *loopControle = false;
+    printf("Operação: %i,0,%.2f,%i foi rejeitada\n", posicao, valor, quantidade);
   } else {
     while(count != posicao) {
       produto = produto->proximo;
@@ -130,7 +129,7 @@ void removerFinal(LivroDeOfertas *livroDeOfertas) {
 
 }
 
-void remover(LivroDeOfertas *livroDeOfertas, int posicao, bool *loopControle) {
+void remover(LivroDeOfertas *livroDeOfertas, int posicao) {
   int count = 1;
   Produto *produtoAtual, *produtoAlvo = (Produto *) malloc(sizeof(Produto));
 
@@ -142,7 +141,7 @@ void remover(LivroDeOfertas *livroDeOfertas, int posicao, bool *loopControle) {
     removerFinal(livroDeOfertas);
   } else if (posicao > livroDeOfertas->tamanho) {
     printf("%d está fora dos limites da lista que tem tamanho %d \n", posicao, livroDeOfertas->tamanho);
-    *loopControle = false;
+    printf("Operação: %i,0,0,0 foi rejeitada\n", posicao);
   }
   else {
     while(count < (posicao - 1)) {
@@ -240,7 +239,6 @@ int getQuantidade(char *parametros, int *ponteiro) {
 int main() {
 
    LivroDeOfertas livroDeOfertas;
-   bool loopControle = true;
    int numDeNotificacoes;
    int numDeNotificacoesProcessadas = 0;
    int ponteiro;
@@ -265,7 +263,7 @@ int main() {
    printf("\n");
    scanf("%i", &numDeNotificacoes);
 
-   while((loopControle) && (numDeNotificacoesProcessadas < numDeNotificacoes)) {
+   while(numDeNotificacoesProcessadas < numDeNotificacoes) {
 
     printf("\n");
     scanf("%s", parametros);
@@ -280,34 +278,33 @@ int main() {
     switch(acao) {
       case 0:
         if((valor > 0) && (quantidade > 0)) {
-          inserir(&livroDeOfertas, posicao, valor, quantidade, &loopControle);
+          inserir(&livroDeOfertas, posicao, valor, quantidade);
         } else {
           printf("Inserções esperam valores positivos e não nulos para \"valor\" e \"quantidade\".\n");
-          loopControle = false;
+          printf("Operação: %i,0,%.2f,%i foi rejeitada\n", posicao, valor, quantidade);
         }
         break;
 
       case 1:
         if((valor > 0) && (quantidade > 0)) {
-          modificar(&livroDeOfertas, posicao, valor, quantidade, &loopControle);
+          modificar(&livroDeOfertas, posicao, valor, quantidade);
         } else {
           printf("Modificações esperam valores positivos e não nulos para \"valor\" e \"quantidade\".\n");
-          loopControle = false;
+          printf("Operação: %i,1,%.2f,%i foi rejeitada\n", posicao, valor, quantidade);
         }
         break;
 
       case 2:
         if(valor == 0 && quantidade == 0) {
-          remover(&livroDeOfertas, posicao, &loopControle);
+          remover(&livroDeOfertas, posicao);
         } else {
           printf("Remoções esperam valores zero para \"valor\" e \"quantidade\".\n");
-          loopControle = false;
+          printf("Operação: %i,2,%.2f,%i foi rejeitada\n", posicao, valor, quantidade);
         }
         break;
 
       default:
-        loopControle = false;
-        printf("Opção inválida\n");
+        printf("Operação: %i,0,%.2f,%i é inválida\n", posicao, valor, quantidade);
     }
 
     numDeNotificacoesProcessadas++;
