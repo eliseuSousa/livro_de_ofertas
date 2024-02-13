@@ -160,12 +160,13 @@ void imprimirLivroDeOfertas(LivroDeOfertas *livroDeOfertas) {
   int i = 1;
   Produto *produtoAtual = livroDeOfertas->inicio;
 
-  printf("Livro de Ofertas:\n");
+  printf("\nLivro de Ofertas:\n");
   while(produtoAtual != NULL) {
     printf("%i,%.2f,%i\n", i, produtoAtual->valor, produtoAtual->quantidade);
     produtoAtual = produtoAtual->proximo;
     i++;
   }
+  printf("\n");
 }
 
 // Pegando as informações passadas pelo usuário
@@ -260,12 +261,12 @@ int main() {
    inserirFim(&livroDeOfertas, 17.5, 200);
    imprimirLivroDeOfertas(&livroDeOfertas);
 
-   printf("\n");
+   printf("");
    scanf("%i", &numDeNotificacoes);
 
    while(numDeNotificacoesProcessadas < numDeNotificacoes) {
 
-    printf("\n");
+    printf("");
     scanf("%s", parametros);
 
     ponteiro = 0;
@@ -281,7 +282,7 @@ int main() {
           inserir(&livroDeOfertas, posicao, valor, quantidade);
         } else {
           printf("Inserções esperam valores positivos e não nulos para \"valor\" e \"quantidade\".\n");
-          printf("Operação: %i,0,%.2f,%i foi rejeitada\n", posicao, valor, quantidade);
+          printf("Operação: %i,0,%.2f,%i foi rejeitada!\n", posicao, valor, quantidade);
         }
         break;
 
@@ -290,7 +291,7 @@ int main() {
           modificar(&livroDeOfertas, posicao, valor, quantidade);
         } else {
           printf("Modificações esperam valores positivos e não nulos para \"valor\" e \"quantidade\".\n");
-          printf("Operação: %i,1,%.2f,%i foi rejeitada\n", posicao, valor, quantidade);
+          printf("Operação: %i,1,%.2f,%i foi rejeitada!\n", posicao, valor, quantidade);
         }
         break;
 
@@ -299,7 +300,7 @@ int main() {
           remover(&livroDeOfertas, posicao);
         } else {
           printf("Remoções esperam valores zero para \"valor\" e \"quantidade\".\n");
-          printf("Operação: %i,2,%.2f,%i foi rejeitada\n", posicao, valor, quantidade);
+          printf("Operação: %i,2,%.2f,%i foi rejeitada!\n", posicao, valor, quantidade);
         }
         break;
 
