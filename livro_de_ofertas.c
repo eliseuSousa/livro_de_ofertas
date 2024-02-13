@@ -114,10 +114,10 @@ void removerFinal(LivroDeOfertas *livroDeOfertas) {
   if (livroDeOfertas->tamanho == 1) {
     removerInicio(livroDeOfertas);
   } else {
-    produtoAlvo = livroDeOfertas->inicio;
+    produtoAtual = livroDeOfertas->inicio;
 
     while(count < (livroDeOfertas->tamanho - 1)) {
-      produtoAlvo = produtoAlvo->proximo;
+      produtoAtual = produtoAtual->proximo;
       count++;
     }
 
